@@ -243,6 +243,7 @@
                         // if a callback has been set, then call it with the page number as an argument
                         if (scope.onPageChange) {
                             scope.onPageChange({ newPageNumber : num });
+                            showPaginationResult();
                         }
                     }
                 }
@@ -256,6 +257,31 @@
                     if (scope.pagination.last < scope.pagination.current) {
                         scope.setCurrent(scope.pagination.last);
                     }
+                    showPaginationResult();
+                }
+                
+                // Added function to generate pagination result
+                function showPaginationResult(){
+                    if (scope.pagination.current == 1 ){
+                        scope.resultStart = 1;
+                        if ( paginationService.getCollectionLength(paginationId) < paginationService.getItemsPerPage(paginationId) ){
+                            scope.resultEnd = paginationService.getCollectionLength(paginationId);
+                        } else {
+                          scope.resultEnd = paginationService.getItemsPerPage(paginationId);  
+                        }
+                    } else if ((paginationService.getCollectionLength(paginationId) % paginationService.getItemsPerPage(paginationId)) != 0){
+                        scope.resultStart = ((scope.pagination.current -1) * paginationService.getItemsPerPage(paginationId)) + 1;
+                        if (scope.pagination.current == scope.pagination.last){
+                           scope.resultEnd = paginationService.getCollectionLength(paginationId); 
+                        } else {
+                            scope.resultEnd = scope.pagination.current * paginationService.getItemsPerPage(paginationId);
+                        }
+                        
+                    } else {
+                        scope.resultStart = ((scope.pagination.current -1) * paginationService.getItemsPerPage(paginationId)) + 1;
+                        scope.resultEnd = scope.pagination.current * paginationService.getItemsPerPage(paginationId);
+                    }
+                    scope.totalResult = paginationService.getCollectionLength(paginationId);
                 }
 
                 function isValidPageNumber(num) {
